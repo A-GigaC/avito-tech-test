@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	dto "internship-task/pr-review-service/dto"
-	mapper "internship-task/pr-review-service/mapper"
-	repository "internship-task/pr-review-service/repository"
+	dto "internship-task/pr-review-service/internal/dto"
+	mapper "internship-task/pr-review-service/internal/mapper"
+	repository "internship-task/pr-review-service/internal/repository"
 )
 
 var (
@@ -41,7 +41,6 @@ func (s *userService) SetUserActive(ctx context.Context, req *dto.SetUserActiveR
 		return nil, err
 	}
 
-	// Возвращаем обновленного пользователя
 	userDB.IsActive = req.IsActive
 	return mapper.ToUserResponse(userDB), nil
 }

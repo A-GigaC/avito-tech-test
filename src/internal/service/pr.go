@@ -3,10 +3,10 @@ package service
 import (
 	"context"
 	"errors"
-	dto "internship-task/pr-review-service/dto"
-	mapper "internship-task/pr-review-service/mapper"
-	model "internship-task/pr-review-service/model"
-	repository "internship-task/pr-review-service/repository"
+	dto "internship-task/pr-review-service/internal/dto"
+	mapper "internship-task/pr-review-service/internal/mapper"
+	model "internship-task/pr-review-service/internal/model"
+	repository "internship-task/pr-review-service/internal/repository"
 	"math/rand"
 	"time"
 )
@@ -42,9 +42,7 @@ func NewPullRequestService(prRepo repository.PullRequestRepository, userRepo rep
 func (s *pullRequestService) CreatePullRequest(ctx context.Context, req *dto.CreatePRRequest) (*dto.PRResponse, error) {
 	// Проверяем существование pr с таким же id
 	pr, err := s.prRepo.GetByID(ctx, req.PRID)
-	if err != nil {
-		return nil, err
-	} else if pr.PRID == req.PRID {
+	if pr != nil {
 		return nil, ErrPullRequestExists
 	}
 	// Проверяем, существует ли пользователь

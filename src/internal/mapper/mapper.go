@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	dto "internship-task/pr-review-service/dto"
-	model "internship-task/pr-review-service/model"
+	dto "internship-task/pr-review-service/internal/dto"
+	model "internship-task/pr-review-service/internal/model"
 	"time"
 )
 
@@ -42,28 +42,27 @@ func ToTeamResponse(teamDB *model.TeamDB, usersDB []model.UserDB) *dto.TeamRespo
 	}
 }
 
-// ToPRDB преобразует CreatePRRequest в PullRequestDB
-func ToPRDB(req *dto.CreatePRRequest, reviewers []string) *model.PullRequestDB {
+func ToPRDB(req *dto.CreatePRRequest, assignedReviewers []string) *model.PullRequestDB {
 	return &model.PullRequestDB{
-		PRID:              req.PRID,
-		PRName:            req.PRName,
-		AuthorID:          req.AuthorID,
-		Status:            model.StatusOpen,
-		AssignedReviewers: reviewers,
-		CreatedAt:         time.Now(),
+		PRID:               req.PRID,
+		PRName:             req.PRName,
+		AuthorID:           req.AuthorID,
+		Status:             "OPEN",
+		CreatedAt:          time.Now(),
+		MergedAt:           time.Time{}, 
+		AssignedReviewers:  model.JSONArray(assignedReviewers), 
 	}
 }
 
-// ToPRResponse преобразует PullRequestDB в PRResponse
 func ToPRResponse(prDB *model.PullRequestDB) *dto.PRResponse {
 	return &dto.PRResponse{
-		PRID:              prDB.PRID,
-		PRName:            prDB.PRName,
-		AuthorID:          prDB.AuthorID,
-		Status:            string(prDB.Status),
-		AssignedReviewers: prDB.AssignedReviewers,
-		CreatedAt:         prDB.CreatedAt,
-		MergedAt:          prDB.MergedAt,
+		PRID:               prDB.PRID,
+		PRName:             prDB.PRName,
+		AuthorID:           prDB.AuthorID,
+		Status:             string(prDB.Status),
+		CreatedAt:          prDB.CreatedAt,
+		MergedAt:           prDB.MergedAt,
+		AssignedReviewers:  []string(prDB.AssignedReviewers), 
 	}
 }
 

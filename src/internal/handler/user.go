@@ -1,8 +1,8 @@
 package handler
 
 import (
-	dto "internship-task/pr-review-service/dto"
-	service "internship-task/pr-review-service/service"
+	dto "internship-task/pr-review-service/internal/dto"
+	service "internship-task/pr-review-service/internal/service"
 	http "net/http"
 
 	gin "github.com/gin-gonic/gin"

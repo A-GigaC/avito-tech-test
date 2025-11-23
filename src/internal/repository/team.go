@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	model "internship-task/pr-review-service/model"
+	model "internship-task/pr-review-service/internal/model"
 
 	gorm "gorm.io/gorm"
 )
