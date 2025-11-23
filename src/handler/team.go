@@ -28,26 +28,10 @@ func (h *TeamHandler) AddTeam(c *gin.Context) {
 	teamResp, err := h.teamService.CreateTeam(c.Request.Context(), &req)
 	if err != nil {
 		if err == service.ErrTeamExists {
-			c.JSON(http.StatusConflict, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "TEAM_EXISTS",
-					Message: "team_name already exists",
-				},
-			})
+			c.JSON(http.StatusBadRequest, dto.ErrorTeamExists)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Error: struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}{
-				Code:    "INTERNAL_ERROR",
-				Message: err.Error(),
-			},
-		})
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternal)
 		return
 	}
 
@@ -57,29 +41,13 @@ func (h *TeamHandler) AddTeam(c *gin.Context) {
 func (h *TeamHandler) GetTeam(c *gin.Context) {
 	teamName := c.Query("team_name")
 	if teamName == "" {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{
-			Error: struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}{
-				Code:    "BAD_REQUEST",
-				Message: "team_name is required",
-			},
-		})
+		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest)
 		return
 	}
 
 	teamResp, err := h.teamService.GetTeam(c.Request.Context(), teamName)
 	if err != nil {
-		c.JSON(http.StatusNotFound, dto.ErrorResponse{
-			Error: struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}{
-				Code:    "NOT_FOUND",
-				Message: "team not found",
-			},
-		})
+		c.JSON(http.StatusNotFound, dto.ErrorNotFound)
 		return
 	}
 

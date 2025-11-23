@@ -28,37 +28,13 @@ func (h *PullRequestHandler) CreatePullRequest(c *gin.Context) {
 	pullRequestResp, err := h.pullRequestService.CreatePullRequest(c.Request.Context(), &req)
 	if err != nil {
 		if err == service.ErrPullRequestExists {
-			c.JSON(http.StatusConflict, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "PR_EXISTS",
-					Message: "PR id already exists",
-				},
-			})
+			c.JSON(http.StatusConflict, dto.ErrorPRExists)
 			return
 		} else if err == service.ErrResourceNotFound {
-			c.JSON(http.StatusConflict, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "NOT_FOUND",
-					Message: "resource not found",
-				},
-			})
+			c.JSON(http.StatusNotFound, dto.ErrorNotFound)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Error: struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}{
-				Code:    "INTERNAL_ERROR",
-				Message: err.Error(),
-			},
-		})
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternal)
 		return
 	}
 
@@ -75,30 +51,14 @@ func (h *PullRequestHandler) MergePullRequest(c *gin.Context) {
 	pullRequestResp, err := h.pullRequestService.MergePullRequest(c.Request.Context(), &req)
 	if err != nil {
 		if err == service.ErrResourceNotFound {
-			c.JSON(http.StatusConflict, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "NOT_FOUND",
-					Message: "resource not found",
-				},
-			})
+			c.JSON(http.StatusNotFound, dto.ErrorNotFound)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Error: struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}{
-				Code:    "INTERNAL_ERROR",
-				Message: err.Error(),
-			},
-		})
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternal)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"pullRequest": pullRequestResp})
+	c.JSON(http.StatusOK, gin.H{"pullRequest": pullRequestResp})
 }
 
 func (h *PullRequestHandler) ReassignReviewer(c *gin.Context) {
@@ -112,55 +72,15 @@ func (h *PullRequestHandler) ReassignReviewer(c *gin.Context) {
 	if err != nil {
 		switch err {
 		case service.ErrResourceNotFound:
-			c.JSON(http.StatusNotFound, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "NOT_FOUND",
-					Message: "PR or user not found",
-				},
-			})
+			c.JSON(http.StatusNotFound, dto.ErrorNotFound)
 		case service.ErrPRMerged:
-			c.JSON(http.StatusConflict, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "PR_MERGED",
-					Message: "cannot reassign on merged PR",
-				},
-			})
+			c.JSON(http.StatusConflict, dto.ErrorPRMerged)
 		case service.ErrReviewerNotAssigned:
-			c.JSON(http.StatusConflict, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "NOT_ASSIGNED",
-					Message: "reviewer is not assigned to this PR",
-				},
-			})
+			c.JSON(http.StatusConflict, dto.ErrorNotAssigned)
 		case service.ErrNoCandidate:
-			c.JSON(http.StatusConflict, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "NO_CANDIDATE",
-					Message: "no active replacement candidate in team",
-				},
-			})
+			c.JSON(http.StatusConflict, dto.ErrorNoCandidate)
 		default:
-			c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "INTERNAL_ERROR",
-					Message: err.Error(),
-				},
-			})
+			c.JSON(http.StatusInternalServerError, dto.ErrorInternal)
 		}
 		return
 	}

@@ -19,57 +19,35 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 }
 
 func (h *UserHandler) SetUserActive(c *gin.Context) {
-	// Получаем тело запроса
 	var req dto.SetUserActiveRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Обновляем статус активности пользователя
 	user, err := h.userService.SetUserActive(c.Request.Context(), &req)
 	if err != nil {
 		if err == service.ErrUserNotFound {
-			c.JSON(http.StatusNotFound, dto.ErrorResponse{
-				Error: struct {
-					Code    string `json:"code"`
-					Message string `json:"message"`
-				}{
-					Code:    "NOT_FOUND",
-					Message: "resource not found",
-				},
-			})
+			c.JSON(http.StatusNotFound, dto.ErrorNotFound)
 			return
 		}
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Error: struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}{
-				Code:    "INTERNAL_ERROR",
-				Message: err.Error(),
-			},
-		})
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternal)
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"user": user})
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
 func (h *UserHandler) GetReview(c *gin.Context) {
 	userID := c.Query("user_id")
+	if userID == "" {
+		c.JSON(http.StatusBadRequest, dto.ErrorBadRequest)
+		return
+	}
 
 	userReviews, err := h.userService.GetUsersReviews(c.Request.Context(), userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{
-			Error: struct {
-				Code    string `json:"code"`
-				Message string `json:"message"`
-			}{
-				Code:    "INTERNAL_ERROR",
-				Message: err.Error(),
-			},
-		})
+		c.JSON(http.StatusInternalServerError, dto.ErrorInternal)
 		return
 	}
 

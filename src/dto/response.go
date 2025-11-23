@@ -60,5 +60,26 @@ type ErrorResponse struct {
         Code    string `json:"code"`
         Message string `json:"message"`
     } `json:"error"`
+
 }
+
+// NewErrorResponse создает новый ErrorResponse
+func NewErrorResponse(code, message string) ErrorResponse {
+    resp := ErrorResponse{}
+    resp.Error.Code = code
+    resp.Error.Message = message
+    return resp
+}
+
+// Предопределенные ошибки
+var (
+    ErrorPRExists = NewErrorResponse("PR_EXISTS", "PR id already exists")
+    ErrorPRMerged = NewErrorResponse("PR_MERGED", "cannot reassign on merged PR")
+    ErrorNotFound = NewErrorResponse("NOT_FOUND", "resource not found")
+    ErrorTeamExists = NewErrorResponse("TEAM_EXISTS", "team_name already exists")
+    ErrorNotAssigned = NewErrorResponse("NOT_ASSIGNED", "reviewer is not assigned to this PR")
+    ErrorNoCandidate = NewErrorResponse("NO_CANDIDATE", "no active replacement candidate in team")
+    ErrorBadRequest = NewErrorResponse("BAD_REQUEST", "bad request")
+    ErrorInternal = NewErrorResponse("INTERNAL_ERROR", "internal server error")
+)
 

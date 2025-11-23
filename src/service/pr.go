@@ -67,17 +67,13 @@ func (s *pullRequestService) CreatePullRequest(ctx context.Context, req *dto.Cre
 		return nil, err
 	}
 	// Назначаем ревьюеров
-	assignedReviewers := []string{}
-	if len(activeMembers) == 1 {
-		assignedReviewers[0] = activeMembers[0].UserID
-	} else if len(activeMembers) > 1 {
-		firstIndex := rand.Intn(len(activeMembers))
-		assignedReviewers[0] = activeMembers[firstIndex].UserID
-		newIndex := firstIndex
-		for newIndex == firstIndex {
-			newIndex = rand.Intn(len(activeMembers))
+	assignedReviewers := make([]string, 0, 2)
+	if len(activeMembers) > 0 {
+		indices := rand.Perm(len(activeMembers))
+		count := min(2, len(indices))
+		for i := 0; i < count; i++ {
+			assignedReviewers = append(assignedReviewers, activeMembers[indices[i]].UserID)
 		}
-		assignedReviewers[1] = activeMembers[newIndex].UserID
 	}
 	// Получаем объект PRDB
 	prDB := mapper.ToPRDB(req, assignedReviewers)
