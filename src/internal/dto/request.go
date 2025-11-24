@@ -28,7 +28,7 @@ type MergePRRequest struct {
 // ReassignReviewerRequest - запрос на переназначение ревьювера
 type ReassignReviewerRequest struct {
     PRID      string `json:"pull_request_id" binding:"required,min=1,max=255"`
-    OldUserID string `json:"old_user_id" binding:"required,min=1,max=255"`
+    OldUserID string `json:"old_reviewer_id" binding:"required,min=1,max=255"`
 }
 
 // SetUserActiveRequest - запрос на изменение активности пользователя

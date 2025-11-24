@@ -15,7 +15,7 @@ func SetupRoutes(router *gin.Engine,
         teamRoutes.GET("/get", teamHandler.GetTeam)
     }
     
-    userRoutes := router.Group("/users")
+    userRoutes := router.Group("/user")
     {
         userRoutes.POST("/setIsActive", userHandler.SetUserActive)
         userRoutes.GET("/getReview", userHandler.GetReview)
